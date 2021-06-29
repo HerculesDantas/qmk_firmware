@@ -38,17 +38,21 @@ enum {
 
 };
 
+bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case KC_RIGHT_EXSP:
+            return true;
+        default:
+            return false;
+    }
+}
+
 //Tap Dance Definitions
 //E and its special characters
 void accent_e (qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 2) {
     // SEND_STRING ("'"+"e");
-    SEND_STRING("'e");
-    reset_tap_dance (state);
-
-  } else if (state->count == 3) {
-    // SEND_STRING ("'"+"e");
-    SEND_STRING("'e");
+    SEND_STRING(SS_RALT("e"));
     reset_tap_dance (state);
   } else {
     SEND_STRING ("e");
@@ -59,7 +63,7 @@ void accent_e (qk_tap_dance_state_t *state, void *user_data) {
 //C and its special characters
 void accent_c (qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 2) {
-    SEND_STRING("'c");
+    SEND_STRING(SS_RALT(","));
     reset_tap_dance (state);
   } else {
     SEND_STRING ("c");
@@ -67,22 +71,23 @@ void accent_c (qk_tap_dance_state_t *state, void *user_data) {
   }
 };
 
-//O and its special characters
 void accent_o (qk_tap_dance_state_t *state, void *user_data) {
-    if (state->count == 2) {
-    SEND_STRING("'o");
+  if (state->count == 2) {
+    SEND_STRING(SS_RALT("o"));
+    reset_tap_dance(state);
+  } else if (state->count == 3) {
+    SEND_STRING("~o");
     reset_tap_dance (state);
   } else {
-    SEND_STRING ("o");
-    reset_tap_dance (state);
+    SEND_STRING("o");
+    reset_tap_dance(state);
   }
 };
 
 //I and its special characters
 void accent_i (qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 2) {
-    // SEND_STRING ("'"+"e");
-    SEND_STRING("'i");
+    SEND_STRING(SS_RALT("i"));
     reset_tap_dance (state);
   } else {
     SEND_STRING ("i");
@@ -93,8 +98,7 @@ void accent_i (qk_tap_dance_state_t *state, void *user_data) {
 //U and its special characters
 void accent_u (qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 2) {
-    // SEND_STRING ("'"+"e");
-    SEND_STRING("'u");
+    SEND_STRING(SS_RALT("u"));
     reset_tap_dance (state);
   } else {
     SEND_STRING ("u");
@@ -105,12 +109,11 @@ void accent_u (qk_tap_dance_state_t *state, void *user_data) {
 //A and its special characters
 void accent_a (qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 2) {
-    // SEND_STRING ("'"+"e");
-    SEND_STRING("'a");
+    SEND_STRING(SS_RALT("a"));
     reset_tap_dance (state);
 
   } else if (state->count == 3) {
-    SEND_STRING("`a");
+    SEND_STRING("~a");
     reset_tap_dance (state);
   } else {
     SEND_STRING ("a");
@@ -149,16 +152,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT_EXSP,              KC_RIGHT_EXSP,              MO(3),   KC_LEFT, KC_DOWN, KC_RGHT
     ),
     [1] = LAYOUT(
-        KC_TILDE,   KC_AMPERSAND, KC_ASTERISK, KC_9, KC_0, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, KC_DEL,
+        KC_GRAVE,  KC_AMPERSAND , KC_ASTERISK, _______ , _______, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, KC_DEL,
         _______,   KC_DOLLAR, KC_PERCENT,  KC_CIRCUMFLEX,  _______, _______, KC_HOME, KC_PGDOWN, KC_PGUP, KC_END, _______,
-        _______,    KC_EXCLAIM, KC_AT, KC_HASH, _______, _______, _______, KC_SCOLON, KC_LPRN, _______, KC_RPRN,
+        _______,    KC_EXCLAIM , KC_AT, KC_HASH , _______, _______, _______, KC_SCOLON, KC_LPRN, _______, KC_RPRN,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
     [2] = LAYOUT(
-        KC_QUOTE,   KC_7, KC_8, KC_9, KC_0, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
-        _______,   KC_4, KC_5,  KC_6,  _______, _______, _______, _______, _______, _______, _______,
-        _______,    KC_1, KC_2, KC_3, _______, _______, _______, _______, KC_LBRC, _______, KC_RBRC,
+        KC_QUOTE,   KC_7, KC_8, KC_9, KC_0 , _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
+        _______,   KC_4, KC_5,  KC_6,  _______, _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
+        _______,    KC_1, KC_2, KC_3, _______ , _______, _______, _______, KC_LBRC, _______, KC_RBRC,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
@@ -166,14 +169,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [3] = LAYOUT(
         KC_QUOTE,   KC_SLASH, KC_QUESTION, _______, _______, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
         KC_F1,  KC_F2, KC_F3,  KC_F4,  KC_F5, KC_F6, KC_F7, KC_F8, KC_9, KC_F10, KC_F11,
-        KC_F1,    KC_BSLS, KC_PIPE, _______, _______, _______, _______, _______, KC_LBRC, _______, KC_RBRC,
+        KC_F12,    KC_BSLS, KC_PIPE, _______, _______, _______, _______, _______, _______, _______, KC_SCOLON,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
     [4] = LAYOUT(
-        KC_QUOTE,   _______, KC_UP, _______, _______, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
-        _______,   KC_LEFT, KC_DOWN,  KC_RIGHT,  _______, _______, _______, _______, _______, _______, _______,
-        _______,    _______, _______, _______, _______, _______, _______, _______, KC_LBRC, _______, KC_RBRC,
+        KC_QUOTE,   _______, KC_UP, _______, _______, _______, _______, _______, _______, _______, KC_F5, RCS(KC_F5),
+        _______,   KC_LEFT, KC_DOWN,  KC_RIGHT,  _______, _______, _______, _______, _______, KC_F10, KC_F11,
+        _______,    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
