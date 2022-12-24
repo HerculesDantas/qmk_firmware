@@ -1,19 +1,5 @@
-/* Copyright 2019 mechmerlin
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 #include QMK_KEYBOARD_H
+
 
 // Layer shorthand
 enum layers {
@@ -65,9 +51,6 @@ void accent_o (qk_tap_dance_state_t *state, void *user_data) {
   if (state->count == 2) {
     SEND_STRING(SS_RALT("o"));
     reset_tap_dance(state);
-  // } else if (state->count == 3) {
-  //   SEND_STRING("~o");
-  //   reset_tap_dance (state);
   } else {
     SEND_STRING("o");
     reset_tap_dance(state);
@@ -102,9 +85,6 @@ void accent_a (qk_tap_dance_state_t *state, void *user_data) {
     SEND_STRING(SS_RALT("a"));
     reset_tap_dance (state);
 
-  // } else if (state->count == 3) {
-    // SEND_STRING("~a");
-    // reset_tap_dance (state);
   } else {
     SEND_STRING ("a");
     reset_tap_dance (state);
@@ -144,6 +124,19 @@ void tilde_o(qk_tap_dance_state_t *state, void *user_data) {
   }
 };
 
+
+//Quotes and double quotes
+void quotes(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 2) {
+      // register_code(KC_QUOT);
+      tap_code16(KC_DOUBLE_QUOTE);
+      reset_tap_dance (state);
+  } else {
+      tap_code(KC_QUOTE);
+      reset_tap_dance (state);
+  }
+};
+
 //Tap Dance Declarations
 enum {
 
@@ -155,7 +148,8 @@ enum {
   TD_A_ACCENT,
   TD_A_TILDE_LEFT,
   TD_A_TILDE_RIGHT,
-  TD_O_TILDE
+  TD_O_TILDE,
+  TD_QUOTES,
 };
 
 qk_tap_dance_action_t tap_dance_actions[] = {
@@ -167,9 +161,9 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [TD_A_ACCENT] = ACTION_TAP_DANCE_FN(accent_a),
   [TD_A_TILDE_LEFT] = ACTION_TAP_DANCE_FN(tilde_a_left),
   [TD_A_TILDE_RIGHT] = ACTION_TAP_DANCE_FN(tilde_a_right),
-  [TD_O_TILDE] = ACTION_TAP_DANCE_FN(tilde_o)
+  [TD_O_TILDE] = ACTION_TAP_DANCE_FN(tilde_o),
+  [TD_QUOTES] = ACTION_TAP_DANCE_FN(quotes)
 };
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -185,55 +179,41 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * '------------------------------------------------------------------------'
    */
 
-    [_BASE] = LAYOUT(
-        KC_TAB,  KC_Q,    KC_W,    TD(TD_E_ACCENT),    KC_R,    KC_T,    KC_Y,    TD(TD_U_ACCENT),    TD(TD_I_ACCENT),    TD(TD_O_ACCENT),    KC_P,    KC_BSPC,
-        KC_ESC_FN,    TD(TD_A_ACCENT),    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_ENT,
-        KC_LSFT,          KC_Z,    KC_X,    TD(TD_C_ACCENT),    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_UP,   RSFT_T(KC_DOT),
+    [_BASE] = LAYOUT_arrow(
+        KC_TAB, KC_Q, KC_W, TD(TD_E_ACCENT), KC_R,  KC_T,    KC_Y,    TD(TD_U_ACCENT),    TD(TD_I_ACCENT),    TD(TD_O_ACCENT),    KC_P,    KC_BSPC,
+        KC_ESC_FN,    TD(TD_A_ACCENT),    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN,   KC_ENT,
+        KC_LSFT,  KC_Z,    KC_X,    TD(TD_C_ACCENT),    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT, KC_UP,   KC_RSFT,
         KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT_EXSP,              KC_RIGHT_EXSP,              MO(3),   KC_LEFT, KC_DOWN, KC_RGHT
     ),
 
 
-   /* Base Layer
-   * .-----------------------------------------------------------------------.
-   * | ~ |  &  |  *  |    |     |     |     |     |     |     |     | BkSp |
-   * |------------------------------------------------------------------------|
-   * | Esc   |  A  |  S  |  D  |  F  |  G  |  H  |  J  |  K  |  L  |  Return  |
-   * |------------------------------------------------------------------------|
-   * | Shift    |  Z  |  X  |  C  |  V  |  B  |  N  |  M  |  ,  |  .  |   /   |
-   * |------------------------------------------------------------------------|
-   * | Ctrl  | Win | Alt   |  Space+fn1  |  Space+fn2  | Alt   | Win |  Ctrl  |
-   * '------------------------------------------------------------------------'
-   */
-
-
-    [1] = LAYOUT(
+    [1] = LAYOUT_arrow(
         KC_GRAVE,  KC_AMPERSAND , KC_ASTERISK, _______ , _______, _______, _______, _______, _______, TD(TD_O_TILDE), KC_EQUAL, KC_DEL,
-        _______,   TD(TD_A_TILDE_LEFT), KC_PERCENT,  KC_CIRCUMFLEX,  _______, _______, KC_HOME, KC_PGDOWN, KC_PGUP, KC_END, _______,
-        _______,    KC_EXCLAIM , KC_AT, KC_HASH , _______, _______, _______, KC_SCOLON, KC_LPRN, _______, KC_RPRN,
+        _______,   TD(TD_A_TILDE_LEFT), KC_PERCENT,  KC_CIRCUMFLEX,  _______, _______, KC_HOME, KC_PGDOWN, KC_PGUP, KC_END, _______, _______,
+        _______,    KC_EXCLAIM , KC_AT, KC_HASH , _______, _______, _______, KC_SCOLON, KC_LPRN, KC_RPRN, _______, _______,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
-    [2] = LAYOUT(
-        KC_QUOTE,   KC_7, KC_8, KC_9, KC_0 , _______, _______, _______, _______, TD(TD_O_TILDE), KC_EQUAL, RESET,
-        _______,   TD(TD_A_TILDE_RIGHT), KC_5,  KC_6,  _______, _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
-        _______,    KC_1, KC_2, KC_3, _______ , _______, _______, _______, KC_LBRC, _______, KC_RBRC,
+    [2] = LAYOUT_arrow(
+        TD(TD_QUOTES),   KC_7, KC_8, KC_9, KC_0 , _______, _______, _______, _______, TD(TD_O_TILDE), KC_EQUAL, _______,
+        _______,   TD(TD_A_TILDE_RIGHT), KC_5,  KC_6,  _______, _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______, _______,
+        _______,    KC_1, KC_2, KC_3, _______ , _______, _______, _______, KC_LBRC, KC_RBRC, _______, _______,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
 
-    [3] = LAYOUT(
-        KC_QUOTE,   KC_SLASH, KC_QUESTION, _______, _______, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
-        KC_F1,  KC_F2, KC_F3,  KC_F4,  KC_F5, KC_F6, KC_F7, KC_F8, KC_9, KC_F10, KC_F11,
-        KC_F12,    KC_BSLS, KC_PIPE, _______, _______, _______, _______, _______, _______, _______, KC_SCOLON,
+    [3] = LAYOUT_arrow(
+        TD(TD_QUOTES),   KC_SLASH, KC_QUESTION, _______, _______, _______, _______, _______, _______, KC_MINUS, KC_EQUAL, RESET,
+        KC_F1,  KC_F2, KC_F3,  KC_F4,  KC_F5, KC_F6, KC_F7, KC_F8, KC_9, KC_F10, KC_F11, KC_F12,
+        _______,    KC_BSLS, KC_PIPE, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
     ),
 
-    [4] = LAYOUT(
-        KC_QUOTE,   _______, KC_UP, _______, _______, _______, _______, _______, _______, _______, KC_F5, RCS(KC_F5),
-        _______,   KC_LEFT, KC_DOWN,  KC_RIGHT,  _______, _______, _______, _______, _______, KC_F10, KC_F11,
-        _______,    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    [4] = LAYOUT_arrow(
+        TD(TD_QUOTES),   _______, KC_UP, _______, _______, _______, _______, _______, _______, _______, KC_F5, RCS(KC_F5),
+        _______,   KC_LEFT, KC_DOWN,  KC_RIGHT,  _______, _______, _______, _______, _______, _______, KC_F10, KC_F11,
+        _______,    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______,                _______,             _______, _______, _______, _______
-    ),
+    )
 
 };
-
